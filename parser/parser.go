@@ -78,6 +78,15 @@ func ParseFile(filename string,
 			continue
 		} else if line == "quit" {
 			return
+		} else if line == "draw" {
+			draw.DrawLines(edges, screen)
+			continue
+		} else if line == "show" {
+			display.DisplayScreen(screen)
+			continue
+		}	else if strings.Contains(line, "color") {
+			draw.SetColor(strings.Fields(line)[1])
+			continue
 		}
 
 		if len(line) == 0 || line[0] == '#' {

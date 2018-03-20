@@ -242,6 +242,17 @@ func DrawLine(screen [][][]int, x0, y0, x1, y1 float64) {
 	}
 }
 
+// SetColor sets the color to draw with.
+func SetColor(color string) {
+	if color == "yellow" {
+		DefaultDrawColor = []int{255, 255, 0}
+	} else if color == "white" {
+		DefaultDrawColor = []int{255, 255, 255}
+	} else if color == "black" {
+		DefaultDrawColor = make([]int, 3)
+	}
+}
+
 // plot draws a point (x, y) onto a screen with the default draw color.
 func plot(screen [][][]int, x, y float64) {
 	newX, newY := float64ToInt(x), display.YRES - float64ToInt(y) - 1
