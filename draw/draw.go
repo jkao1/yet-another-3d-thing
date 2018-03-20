@@ -13,7 +13,7 @@ var DefaultDrawColor []int = []int{0, 0, 0}
 
 // DrawLines draws an edge matrix onto a screen.
 func DrawLines(edges [][]float64, screen [][][]int) {
-	for i := 0; i < len(edges[0]) - 1; i++ {
+	for i := 0; i < len(edges[0]) - 1; i+=2 {
 		point := matrix.ExtractColumn(edges, i)
 		nextPoint := matrix.ExtractColumn(edges, i + 1)
 		x0, y0 := point[0], point[1]
@@ -42,7 +42,7 @@ func AddEdge(m [][]float64, params ...float64) {
 // matrix.
 func AddCircle(m [][]float64, params ...float64) {
 	cx, cy, _, r := params[0], params[1], params[2], params[3]
-	for t := 0.0; t < 1.0; t += 0.01 {
+	for t := 0.0; t < 1.0; t += 0.001 {
 		x := r * math.Cos(2*math.Pi*t) + cx
 		y := r * math.Sin(2*math.Pi*t) + cy
 		AddPoint(m, x, y, 0)
@@ -52,26 +52,8 @@ func AddCircle(m [][]float64, params ...float64) {
 // AddCurve adds the curve bounded by the 4 points passed as parameters
 // to an edge matrix.
 func AddCurve(m [][]float64, x0, y0, x1, y1, x2, y2, x3, y3, step float64, curveType string) {
-	var coefGenerator [][]float64
-	switch curveType {
-	case "hermite":
-		coefGenerator = matrix.MakeBezier()
-	case "bezier":
-		coefGenerator = matrix.MakeHermite()
-	default:
-		println(`Curve type supplied to AddCurve was not "hermite" or "bezier".`)
-		return
-	}
-	xCoefs, yCoefs := matrix.NewMatrix(4, 4), matrix.NewMatrix(4, 4)
-	copy(xCoefs, coefGenerator)
-	copy(yCoefs, coefGenerator)
-
-	xCoords, yCoords := make([][]float64, 1), make([][]float64, 1)
-	xCoords[0] = []float64{x0, x1, x2, x3}
-	yCoords[0] = []float64{y0, y1, y2, y3}
-
-	matrix.MultiplyMatrices(&xCoords, &xCoefs)
-	matrix.MultiplyMatrices(&yCoords, &yCoefs)
+	xCoefs := generateCurveCoefs(x0, x1, x2, x3, curveType)
+	yCoefs := generateCurveCoefs(y0, y1, y2, y3, curveType)
 
 	for t := 0.0; t < 1.0; t += step {
 		x := CubicEval(t, xCoefs)
@@ -81,10 +63,26 @@ func AddCurve(m [][]float64, x0, y0, x1, y1, x2, y2, x3, y3, step float64, curve
 	}
 }
 
+func generateCurveCoefs(p0, p1, p2, p3 float64, curveType string) [][]float64 {
+	m := make([][]float64, 4)
+	var coefGenerator [][]float64
+	if curveType == "hermite" {
+		coefGenerator = matrix.MakeHermite()
+	} else if curveType == "bezier" {
+		coefGenerator = matrix.MakeBezier()
+	}
+	m[0] = []float64{p0}
+	m[1] = []float64{p1}
+	m[2] = []float64{p2}
+	m[3] = []float64{p3}
+	matrix.MultiplyMatrices(&coefGenerator, &m)
+	return m
+}
+
 // CubicEval evaluates a cubic function with variable x and coefficients.
 func CubicEval(x float64, coefs [][]float64) (y float64) {
 	for i := 3.0; i >= 0.0; i-- {
-		y += coefs[0][int64(3 - i)] * math.Pow(x, i)
+		y += coefs[int64(3 - i)][0] * math.Pow(x, i)
 	}
 	return
 }

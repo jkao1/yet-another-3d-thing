@@ -94,7 +94,7 @@ func ParseFile(filename string,
 			draw.AddCircle(edges, FloatParams(params)...)
 		} else if line == "hermite" || line == "bezier" {
 			p := FloatParams(params)
-			draw.AddCurve(edges, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], 0.01, line)
+			draw.AddCurve(edges, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], 0.001, line)
 		}	else {
 			var stepTransform [][]float64
 
