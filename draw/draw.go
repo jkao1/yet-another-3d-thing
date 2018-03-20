@@ -137,7 +137,7 @@ func AddTorus(m [][]float64, a ...float64) {
 
 // GenerateTorus  generates all the points along the surface of a torus with
 // center (cx, cy, cz) and radii r1 and r2.
-func GenerateTorus(cx, cy, cz, r1, r2 float64) [][]float64 {
+func GenerateTorus(cx, cy, cz, r2, r1 float64) [][]float64 {
 	points := make([][]float64, 0)
 	for i := 0.0; i < 1.0; i += 0.01 {
 		fi := 2*math.Pi*i
