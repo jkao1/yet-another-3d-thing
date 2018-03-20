@@ -70,6 +70,9 @@ func ParseFile(filename string,
 			draw.DrawLines(edges, screen)
 			display.DisplayScreen(screen)
 			continue
+		} else if line == "clear" {
+			edges = make([][]float64, 4)
+			continue
 		} else if line == "apply" {
 			matrix.MultiplyMatrices(&transform, &edges)
 			continue
@@ -92,6 +95,12 @@ func ParseFile(filename string,
 			draw.AddEdge(edges, FloatParams(params)...)
 		} else if line == "circle" {
 			draw.AddCircle(edges, FloatParams(params)...)
+		} else if line == "sphere" {
+			draw.AddSphere(edges, FloatParams(params)...)
+		} else if line == "box" {
+			draw.AddBox(edges, FloatParams(params)...)
+		} else if line == "torus" {
+			draw.AddTorus(edges, FloatParams(params)...)
 		} else if line == "hermite" || line == "bezier" {
 			p := FloatParams(params)
 			draw.AddCurve(edges, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], 0.001, line)

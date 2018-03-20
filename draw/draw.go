@@ -79,6 +79,79 @@ func generateCurveCoefs(p0, p1, p2, p3 float64, curveType string) [][]float64 {
 	return m
 }
 
+// AddBox adds the points for a rectagular prism whose upper-left corner is
+// (x, y, z) with width, height and depth dimensions.
+func AddBox(m [][]float64, a ...float64) {
+	x, y, z, width, height, depth := a[0], a[1], a[2], a[3], a[4], a[5]
+	AddEdge(m, x, y, z, x+width, y, z)
+	AddEdge(m, x, y, z, x, y-height, z)
+	AddEdge(m, x, y, z, x, y, z-depth)
+
+	AddEdge(m, x, y-height, z, x, y-height, z-depth)
+	AddEdge(m, x, y-height, z, x+width, y-height, z)
+	AddEdge(m, x, y-height, z-depth, x+width, y-height, z-depth)
+	AddEdge(m, x+width, y-height, z, x+width, y-height, z-depth)
+
+	AddEdge(m, x, y, z-depth, x+width, y, z-depth)
+	AddEdge(m, x, y, z-depth, x, y-height, z-depth)
+
+	AddEdge(m, x+width, y, z, x+width, y-height, z)
+	AddEdge(m, x+width, y, z, x+width, y, z-depth)
+	AddEdge(m, x+width, y, z-depth, x+width, y-height, z-depth)
+}
+
+// AddSphere adds all the points for a sphere with center (cx, cy, cz) and
+// radius r.
+func AddSphere(m [][]float64, a ...float64) {
+	cx, cy, cz, r := a[0], a[1], a[2], a[3]
+	for _, p := range GenerateSphere(cx, cy, cz, r) {
+		AddEdge(m, p[0], p[1], p[2], p[0]+1, p[1]+1, p[2]+1)
+	}
+}
+
+// GenerateSphere generates all the points along the surface of a sphere with
+// center (cx, cy, cz) and radius r. It returns a matrix of the points.
+func GenerateSphere(cx, cy, cz, r float64) [][]float64 {
+	points := make([][]float64, 0)
+	for i := 0.0; i < 1.0; i += 0.01 {
+		fi := 2*math.Pi*i
+		for j := 0.0; j < 0.5; j += 0.01 {
+			theta := 2*math.Pi*j
+			x := r*math.Cos(theta) + cx
+			y := r*math.Sin(theta)*math.Cos(fi) + cy
+			z := r*math.Sin(theta)*math.Sin(fi) + cz
+			points = append(points, []float64{x, y, z})
+		}
+	}
+	return points
+}
+
+// AddTorus adds all the points required to make a torus with center
+// (cx, cy, cz) and radii r1 and r2.
+func AddTorus(m [][]float64, a ...float64) {
+	cx, cy, cz, r1, r2 := a[0], a[1], a[2], a[3], a[4]
+	for _, p := range GenerateTorus(cx, cy, cz, r1, r2) {
+		AddEdge(m, p[0], p[1], p[2], p[0]+1, p[1]+1, p[2]+1)
+	}
+}
+
+// GenerateTorus  generates all the points along the surface of a torus with
+// center (cx, cy, cz) and radii r1 and r2.
+func GenerateTorus(cx, cy, cz, r1, r2 float64) [][]float64 {
+	points := make([][]float64, 0)
+	for i := 0.0; i < 1.0; i += 0.01 {
+		fi := 2*math.Pi*i
+		for j := 0.0; j < 1.0; j += 0.01 {
+			theta := 2*math.Pi*j
+			x := math.Cos(fi) * (r2*math.Cos(theta) + r1) + cx
+			y := r2*math.Sin(theta) + cy
+			z := -1 * math.Sin(fi) * (r2*math.Cos(theta) + r1) + cz
+			points = append(points, []float64{x, y, z})
+		}
+	}
+	return points
+}
+
 // CubicEval evaluates a cubic function with variable x and coefficients.
 func CubicEval(x float64, coefs [][]float64) (y float64) {
 	for i := 3.0; i >= 0.0; i-- {
