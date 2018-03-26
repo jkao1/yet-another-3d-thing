@@ -13,9 +13,9 @@ var DefaultDrawColor []int = []int{0, 0, 0}
 
 // DrawLines draws an edge matrix onto a screen.
 func DrawLines(edges [][]float64, screen [][][]int) {
-	for i := 0; i < len(edges[0]) - 1; i+=2 {
+	for i := 0; i < len(edges[0])-1; i += 2 {
 		point := matrix.ExtractColumn(edges, i)
-		nextPoint := matrix.ExtractColumn(edges, i + 1)
+		nextPoint := matrix.ExtractColumn(edges, i+1)
 		x0, y0 := point[0], point[1]
 		x1, y1 := nextPoint[0], nextPoint[1]
 		DrawLine(screen, x0, y0, x1, y1)
@@ -42,9 +42,9 @@ func AddEdge(m [][]float64, params ...float64) {
 // matrix.
 func AddCircle(m [][]float64, params ...float64) {
 	cx, cy, _, r := params[0], params[1], params[2], params[3]
-	for t := 0.0; t < 1.0; t += 0.001 {
-		x := r * math.Cos(2*math.Pi*t) + cx
-		y := r * math.Sin(2*math.Pi*t) + cy
+	for t := 0.0; t <= 1.0; t += 0.001 {
+		x := r*math.Cos(2*math.Pi*t) + cx
+		y := r*math.Sin(2*math.Pi*t) + cy
 		AddPoint(m, x, y, 0)
 	}
 }
@@ -55,7 +55,7 @@ func AddCurve(m [][]float64, x0, y0, x1, y1, x2, y2, x3, y3, step float64, curve
 	xCoefs := generateCurveCoefs(x0, x1, x2, x3, curveType)
 	yCoefs := generateCurveCoefs(y0, y1, y2, y3, curveType)
 
-	for t := 0.0; t < 1.0; t += step {
+	for t := 0.0; t <= 1.0; t += step {
 		x := CubicEval(t, xCoefs)
 		y := CubicEval(t, yCoefs)
 
@@ -113,10 +113,10 @@ func AddSphere(m [][]float64, a ...float64) {
 // center (cx, cy, cz) and radius r. It returns a matrix of the points.
 func GenerateSphere(cx, cy, cz, r float64) [][]float64 {
 	points := make([][]float64, 0)
-	for i := 0.0; i < 1.0; i += 0.01 {
-		fi := 2*math.Pi*i
-		for j := 0.0; j < 0.5; j += 0.01 {
-			theta := 2*math.Pi*j
+	for i := 0.0; i <= 1.0; i += 0.01 {
+		fi := 2 * math.Pi * i
+		for j := 0.0; j <= 0.5; j += 0.01 {
+			theta := 2 * math.Pi * j
 			x := r*math.Cos(theta) + cx
 			y := r*math.Sin(theta)*math.Cos(fi) + cy
 			z := r*math.Sin(theta)*math.Sin(fi) + cz
@@ -139,13 +139,13 @@ func AddTorus(m [][]float64, a ...float64) {
 // center (cx, cy, cz) and radii r1 and r2.
 func GenerateTorus(cx, cy, cz, r2, r1 float64) [][]float64 {
 	points := make([][]float64, 0)
-	for i := 0.0; i < 1.0; i += 0.01 {
-		fi := 2*math.Pi*i
-		for j := 0.0; j < 1.0; j += 0.01 {
-			theta := 2*math.Pi*j
-			x := math.Cos(fi) * (r2*math.Cos(theta) + r1) + cx
+	for i := 0.0; i <= 1.0; i += 0.01 {
+		fi := 2 * math.Pi * i
+		for j := 0.0; j <= 1.0; j += 0.01 {
+			theta := 2 * math.Pi * j
+			x := math.Cos(fi)*(r2*math.Cos(theta)+r1) + cx
 			y := r2*math.Sin(theta) + cy
-			z := -1 * math.Sin(fi) * (r2*math.Cos(theta) + r1) + cz
+			z := -1*math.Sin(fi)*(r2*math.Cos(theta)+r1) + cz
 			points = append(points, []float64{x, y, z})
 		}
 	}
@@ -155,7 +155,7 @@ func GenerateTorus(cx, cy, cz, r2, r1 float64) [][]float64 {
 // CubicEval evaluates a cubic function with variable x and coefficients.
 func CubicEval(x float64, coefs [][]float64) (y float64) {
 	for i := 3.0; i >= 0.0; i-- {
-		y += coefs[int64(3 - i)][0] * math.Pow(x, i)
+		y += coefs[int64(3-i)][0] * math.Pow(x, i)
 	}
 	return
 }
@@ -195,10 +195,10 @@ func DrawLine(screen [][][]int, x0, y0, x1, y1 float64) {
 			plot(screen, x, y)
 			if d > 0 {
 				y++
-				d += 2*B
+				d += 2 * B
 			}
 			x++
-			d += 2*A
+			d += 2 * A
 		}
 	}
 
@@ -208,23 +208,23 @@ func DrawLine(screen [][][]int, x0, y0, x1, y1 float64) {
 			plot(screen, x, y)
 			if d < 0 {
 				x++
-				d += 2*A
+				d += 2 * A
 			}
 			y++
-			d += 2*B
+			d += 2 * B
 		}
 	}
 
 	if slope < 0 && slope >= -1 { // octant 8
 		d = 2*A - B
-    for x <= x1 && y >= y1 {
+		for x <= x1 && y >= y1 {
 			plot(screen, x, y)
 			if d < 0 {
 				y--
-				d -= 2*B
+				d -= 2 * B
 			}
 			x++
-			d += 2*A
+			d += 2 * A
 		}
 	}
 
@@ -234,10 +234,10 @@ func DrawLine(screen [][][]int, x0, y0, x1, y1 float64) {
 			plot(screen, x, y)
 			if d > 0 {
 				x++
-				d += 2*A
+				d += 2 * A
 			}
 			y--
-			d -= 2*B
+			d -= 2 * B
 		}
 	}
 }
@@ -255,22 +255,22 @@ func SetColor(color string) {
 
 // plot draws a point (x, y) onto a screen with the default draw color.
 func plot(screen [][][]int, x, y float64) {
-	newX, newY := float64ToInt(x), display.YRES - float64ToInt(y) - 1
-	if (newX >= 0 && newX < display.XRES && newY >= 0 && newY < display.YRES) {
+	newX, newY := float64ToInt(x), display.YRES-float64ToInt(y)-1
+	if newX >= 0 && newX < display.XRES && newY >= 0 && newY < display.YRES {
 		screen[newY][newX] = DefaultDrawColor[:]
 	}
 }
 
 // DrawLineFromParams gets arguments from a params slice.
 func DrawLineFromParams(screen [][][]int, params ...float64) {
-	if (len(params) >= 4) {
+	if len(params) >= 4 {
 		DrawLine(screen, params[0], params[1], params[2], params[3])
 	}
 }
 
 // float64ToInt rounds a float64 without truncating it. It returns an int.
 func float64ToInt(f float64) int {
-	if (f - float64(int(f)) < 0.5) {
+	if f-float64(int(f)) < 0.5 {
 		return int(f)
 	}
 	return int(f + 1)
