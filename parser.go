@@ -1,17 +1,12 @@
-// Package parser contains useful functions to parse a scripts file.
-package parser
+// parser contains useful functions to parse a scripts file.
+package main
 
 import (
-	"github.com/jkao1/yet-another-3d-thing/display"
-	"github.com/jkao1/yet-another-3d-thing/draw"
-	"github.com/jkao1/yet-another-3d-thing/matrix"
-
 	"bufio"
 	"os"
 	"strconv"
 	"strings"
 )
-
 
 /* ParseFile goes through the file named filename and performs all of the
    actions listed in that file.
@@ -51,7 +46,7 @@ func ParseFile(filename string,
 	screen [][][]int) {
 
 	file, err := os.Open(filename)
-	if (err != nil) {
+	if err != nil {
 		panic(err)
 	}
 
@@ -63,29 +58,29 @@ func ParseFile(filename string,
 
 		// Immediate operations (no arguments)
 		if line == "ident" {
-			matrix.MakeIdentity(transform)
+			MakeIdentity(transform)
 			continue
 		} else if line == "display" {
-			display.ClearScreen(screen)
-			draw.DrawLines(edges, screen)
-			display.DisplayScreen(screen)
+			ClearScreen(screen)
+			DrawLines(edges, screen)
+			DisplayScreen(screen)
 			continue
 		} else if line == "clear" {
 			edges = make([][]float64, 4)
 			continue
 		} else if line == "apply" {
-			matrix.MultiplyMatrices(&transform, &edges)
+			MultiplyMatrices(&transform, &edges)
 			continue
 		} else if line == "quit" {
 			return
 		} else if line == "draw" {
-			draw.DrawLines(edges, screen)
+			DrawLines(edges, screen)
 			continue
 		} else if line == "show" {
-			display.DisplayScreen(screen)
+			DisplayScreen(screen)
 			continue
-		}	else if strings.Contains(line, "color") {
-			draw.SetColor(strings.Fields(line)[1])
+		} else if strings.Contains(line, "color") {
+			SetColor(strings.Fields(line)[1])
 			continue
 		}
 
@@ -99,48 +94,48 @@ func ParseFile(filename string,
 		params := scanner.Text()
 
 		if line == "save" {
-			display.WriteScreenToExtension(screen, params)
+			WriteScreenToExtension(screen, params)
 		} else if line == "line" {
-			draw.AddEdge(edges, FloatParams(params)...)
+			AddEdge(edges, FloatParams(params)...)
 		} else if line == "circle" {
-			draw.AddCircle(edges, FloatParams(params)...)
+			AddCircle(edges, FloatParams(params)...)
 		} else if line == "sphere" {
-			draw.AddSphere(edges, FloatParams(params)...)
+			AddSphere(edges, FloatParams(params)...)
 		} else if line == "box" {
-			draw.AddBox(edges, FloatParams(params)...)
+			AddBox(edges, FloatParams(params)...)
 		} else if line == "torus" {
-			draw.AddTorus(edges, FloatParams(params)...)
+			AddTorus(edges, FloatParams(params)...)
 		} else if line == "hermite" || line == "bezier" {
 			p := FloatParams(params)
-			draw.AddCurve(edges, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], 0.001, line)
-		}	else {
+			AddCurve(edges, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], 0.001, line)
+		} else {
 			var stepTransform [][]float64
 
 			if line == "move" {
-				stepTransform = matrix.MakeTranslationMatrix(FloatParams(params)...)
+				stepTransform = MakeTranslationMatrix(FloatParams(params)...)
 			} else if line == "scale" {
-				stepTransform = matrix.MakeDilationMatrix(FloatParams(params)...)
+				stepTransform = MakeDilationMatrix(FloatParams(params)...)
 			} else if line == "rotate" {
 				args := strings.Fields(params)
 				numDegrees, err := strconv.ParseFloat(args[1], 64)
-				if (err != nil) {
+				if err != nil {
 					panic(err)
 				}
 
 				switch args[0] {
 				case "x":
-					stepTransform = matrix.MakeRotX(numDegrees)
+					stepTransform = MakeRotX(numDegrees)
 				case "y":
-					stepTransform = matrix.MakeRotY(numDegrees)
+					stepTransform = MakeRotY(numDegrees)
 				case "z":
-					stepTransform = matrix.MakeRotZ(numDegrees)
+					stepTransform = MakeRotZ(numDegrees)
 				}
 			}
 
 			if len(transform) == 0 {
 				transform = stepTransform
 			} else {
-				matrix.MultiplyMatrices(&stepTransform, &transform)
+				MultiplyMatrices(&stepTransform, &transform)
 			}
 		}
 	}
@@ -154,7 +149,7 @@ func FloatParams(text string) (args []float64) {
 	args = []float64{}
 	for _, v := range strings.Fields(text) {
 		floated, err := strconv.ParseFloat(v, 64)
-		if (err != nil) {
+		if err != nil {
 			panic(err)
 		}
 		args = append(args, floated)

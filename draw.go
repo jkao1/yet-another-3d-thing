@@ -1,11 +1,8 @@
-// Package draw contains useful functions to manipulate the edge matrix and draw
+// draw contains useful functions to manipulate the edge matrix and draw
 // it onto a screen.
-package draw
+package main
 
 import (
-	"github.com/jkao1/yet-another-3d-thing/display"
-	"github.com/jkao1/yet-another-3d-thing/matrix"
-
 	"math"
 )
 
@@ -14,8 +11,8 @@ var DefaultDrawColor []int = []int{0, 0, 0}
 // DrawLines draws an edge matrix onto a screen.
 func DrawLines(edges [][]float64, screen [][][]int) {
 	for i := 0; i < len(edges[0])-1; i += 2 {
-		point := matrix.ExtractColumn(edges, i)
-		nextPoint := matrix.ExtractColumn(edges, i+1)
+		point := ExtractColumn(edges, i)
+		nextPoint := ExtractColumn(edges, i+1)
 		x0, y0 := point[0], point[1]
 		x1, y1 := nextPoint[0], nextPoint[1]
 		DrawLine(screen, x0, y0, x1, y1)
@@ -67,15 +64,15 @@ func generateCurveCoefs(p0, p1, p2, p3 float64, curveType string) [][]float64 {
 	m := make([][]float64, 4)
 	var coefGenerator [][]float64
 	if curveType == "hermite" {
-		coefGenerator = matrix.MakeHermite()
+		coefGenerator = MakeHermite()
 	} else if curveType == "bezier" {
-		coefGenerator = matrix.MakeBezier()
+		coefGenerator = MakeBezier()
 	}
 	m[0] = []float64{p0}
 	m[1] = []float64{p1}
 	m[2] = []float64{p2}
 	m[3] = []float64{p3}
-	matrix.MultiplyMatrices(&coefGenerator, &m)
+	MultiplyMatrices(&coefGenerator, &m)
 	return m
 }
 
@@ -255,8 +252,8 @@ func SetColor(color string) {
 
 // plot draws a point (x, y) onto a screen with the default draw color.
 func plot(screen [][][]int, x, y float64) {
-	newX, newY := float64ToInt(x), display.YRES-float64ToInt(y)-1
-	if newX >= 0 && newX < display.XRES && newY >= 0 && newY < display.YRES {
+	newX, newY := float64ToInt(x), YRES-float64ToInt(y)-1
+	if newX >= 0 && newX < XRES && newY >= 0 && newY < YRES {
 		screen[newY][newX] = DefaultDrawColor[:]
 	}
 }

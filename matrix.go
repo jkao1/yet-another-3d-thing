@@ -1,5 +1,5 @@
-// Package matrix provides functions for creating and manipulating matrices.
-package matrix
+// matrix provides functions for creating and manipulating matrices.
+package main
 
 import (
 	"fmt"
@@ -117,7 +117,7 @@ func PrintMatrix(matrix [][]float64) {
 	for _, row := range matrix {
 		for _, value := range row {
 			floatString := fmt.Sprintf("%.2f", value)
-			spaces := strings.Repeat(" ", 8 - len(floatString))
+			spaces := strings.Repeat(" ", 8-len(floatString))
 			output += floatString + spaces
 		}
 		output += "\n"
@@ -148,7 +148,7 @@ func MakeDilationMatrix(params ...float64) (m [][]float64) {
 // X as the axis of rotation. It returns the rotation matrix.
 func MakeRotX(theta float64) (m [][]float64) {
 	m = NewMatrix()
-  radians := theta / 180 * math.Pi
+	radians := theta / 180 * math.Pi
 	sin, cos := math.Sin(radians), math.Cos(radians)
 	MakeIdentity(m)
 	m[1][1], m[1][2] = cos, -sin
@@ -160,7 +160,7 @@ func MakeRotX(theta float64) (m [][]float64) {
 // Y as the axis of rotation. It returns the rotation matrix.
 func MakeRotY(theta float64) (m [][]float64) {
 	m = NewMatrix()
-  radians := theta / 180 * math.Pi
+	radians := theta / 180 * math.Pi
 	sin, cos := math.Sin(radians), math.Cos(radians)
 	MakeIdentity(m)
 	m[0][0], m[0][2] = cos, sin
@@ -172,7 +172,7 @@ func MakeRotY(theta float64) (m [][]float64) {
 // Z as the axis of rotation. It returns the rotation matrix.
 func MakeRotZ(theta float64) (m [][]float64) {
 	m = NewMatrix()
-  radians := theta / 180 * math.Pi
+	radians := theta / 180 * math.Pi
 	sin, cos := math.Sin(radians), math.Cos(radians)
 	MakeIdentity(m)
 	m[0][0], m[0][1] = cos, -sin
